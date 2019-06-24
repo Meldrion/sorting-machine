@@ -47,6 +47,8 @@
     double hsl[3];
     
     double calculation = hsl[0];
+
+    int minimum = 0;
     
     
 void setup() {
@@ -105,7 +107,7 @@ void loop() {
 }
 
 
-void initialize_color() {
+boolean getColorPosition() {
    
    // Rote Lichtwerte
     digitalWrite(s2,LOW);
@@ -150,9 +152,39 @@ void initialize_color() {
 			blue_array[0] = blue;
 			color_code[0] = calculation;
 			count = 1;
+	    		return 0;
 		}
 
     else {
+	    for (int i= 0; i < count; i++)
+	    {
+//		    color_code[i] = 1;
+		    color_code[i] = (red_array[i] - red) + (green_array[i] - green) + (blue_array[i] - blue);
+		    
+	    }
+	    
+	    int posmin=0;
+	    for(int i=1; i < count; i++) {
+	        if (color_code[i] < color_code[posmin])
+		posmin = i;
+	    
+	    if(color_code[posmin]<10)
+	    {
+		    return posmin;
+	    }
+	    else
+	    {
+		    if(count>=6)
+		    {
+			    return 6;
+		    }
+		    else
+		    {
+			    
+		    }
+	    }
+	    
+/*	    
             switch(count) {
     
             case 1:
@@ -211,6 +243,7 @@ void initialize_color() {
             default:
                  
         }
+	*/
   }
 
 
