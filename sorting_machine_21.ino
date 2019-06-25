@@ -29,7 +29,7 @@
     int colorvalue = 0;
     
   // Ein Array von 6 Bytes für jede Farbe vordefinieren
-    byte red_array[6]   = {0,0,0,0,0,0};
+    byte red_array[6]   = {0,0,0,0,0,0};  //  -1 ?
     byte green_array[6] = {0,0,0,0,0,0};
     byte blue_array[6] = {0,0,0,0,0,0};
 
@@ -156,11 +156,13 @@ boolean getColorPosition() {
 		}
 
     else {
-	    for (int i= 0; i < count; i++)
-	    {
-//		    color_code[i] = 1;
-		    color_code[i] = (red_array[i] - red) + (green_array[i] - green) + (blue_array[i] - blue);
-		    
+	    //here minDifCal and maxDifCal gets calculated
+	    for (int i= 0; i < count; i++)			//better would be while, else you need to use a break when found a similar one
+	    {	
+		if ()
+		{
+			
+		}
 	    }
 	    
 	    int posmin=0;
