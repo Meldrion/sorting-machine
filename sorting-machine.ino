@@ -136,19 +136,19 @@ boolean getColorPosition() {
   // in case we have not yet detected a color, the values
   // we have can be taken as first detected color without 
   // any further calculations
-  if (count == 0) {
+  if (colorCount == 0) {
     red_array[0]   = red;
     green_array[0] = green;
     blue_array[0]  = blue;
     // set the nomber of detected colors
-    count = 1;
+    colorCount = 1;
     // this M&M's should go to the first hole
     return 0;
   }
   // in case we at least on detected color
   else {
       // calculate the "difference" to the stored colors
-      for(int i=0; i<count; i++)
+      for(int i=0; i<colorCount; i++)
       {
         delta[i] = abs(red_array[i]-red)+
                    abs(green_array[i]-green)+
@@ -160,7 +160,7 @@ boolean getColorPosition() {
       // we know that we have at least one color, so let's suppose the first on
       // is the smallest and check if there is no smaller later in the array
       int posmin = 0;
-      for(int i=1; i<count; i++)
+      for(int i=1; i<colorCount; i++)
       {
         if(delta[i]<delta[posmin])
         {
@@ -179,20 +179,20 @@ boolean getColorPosition() {
         // existing color
         return posmin;
       }
-      else if(count>=6) // should never be >6, but let's be safe
+      else if(colorCount>=6) // should never be >6, but let's be safe
       {
         return 6;       // hole a index #6 is thge trash, #0 to #5 are the 6 colors.
       }
       else
       {
         // new color to be stored in the array
-        red_array[count]   = red;
-        green_array[count] = green;
-        blue_array[count]  = blue;
+        red_array[colorCount]   = red;
+        green_array[colorCount] = green;
+        blue_array[colorCount]  = blue;
         // increment the number of detected colors
-        count = count + 1;
+        colorCount = colorCount + 1;
         // where the M&M's should go to = the last inserted color position
-        return count-1;
+        return colorCount-1;
       }
   }
   
