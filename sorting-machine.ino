@@ -1,4 +1,4 @@
-#include <Servo.h>                  // FISRO: only blocks are indented
+#include "C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\Servo\Servo.h"                // FISRO: only blocks are indented
                                     // FISRO: right indent after { left indent after }
 
 //SERVO 1
@@ -16,12 +16,12 @@ byte position_S2 = 0;
 //FARBSENSOR
 //-------------------------
 //Verbindung der Farbsensorkontakte mit dem Teensy festlegen
-#define s0 B2
-#define s1 B1      // s0, s1 Output-Frequenz regeln
-#define s2 F1
-#define s3 F4
-#define OE B0
-#define out F0
+#define s0 2
+#define s1 1      // s0, s1 Output-Frequenz regeln
+#define s2 20
+#define s3 19
+#define OE 0
+#define out 21
 
 // Ein Array von 6 Bytes für jede Farbe vordefinieren
 byte red_array[6]   = {0,0,0,0,0,0};  
@@ -35,7 +35,7 @@ int colorCount = 0;
 #define THRESHOLD 10
 
 // FISRO: define the positions where the servo needs to turn for the different holes
-byte holes[7] = [0,1,2,3,4,5,6];
+byte holes[7] = {0,1,2,3,4,5,6};
 
 //RGB - HSL
 //-------------------------
@@ -76,9 +76,6 @@ void setup() {
   digitalWrite(s0, HIGH); //Die vier weiÃen LEDs am Farbsensor sollen leuchten
   digitalWrite(s1, HIGH);
 
-
-  byte position = getColorPosition();
-  // FISRO: make the servo turn to the position of hole[position]
 }
 
 
@@ -87,7 +84,8 @@ void loop() {
     servo1.write(position_S1); // Position unter dem Lichtsensor
     delay(2000);
 
-    initialize_color();
+    byte position = getColorPosition();
+    // FISRO: make the servo turn to the position of hole[position]
 
     position_S1 = 151;       // Position Ã¼ber der Ãffnung
     servo1.write(position_S1);
@@ -173,7 +171,6 @@ boolean getColorPosition() {
       // 1) the read values are a *new* color
       // 2) we have detected 6 colors, so our array is full >> M&M's go to "trash" hole
       // 3) the read values are close enough to an exsting color
-      const int THRESHOLD = 100;  // you need to put a correct value here
       if(delta[posmin]<=THRESHOLD) 
       {
         // existing color
