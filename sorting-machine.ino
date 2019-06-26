@@ -1,4 +1,4 @@
-#include "C:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\Servo\Servo.h"                // FISRO: only blocks are indented
+#include "Servo.h"                // FISRO: only blocks are indented
                                     // FISRO: right indent after { left indent after }
 
 //SERVO 1
@@ -35,7 +35,7 @@ int colorCount = 0;
 #define THRESHOLD 10
 
 // FISRO: define the positions where the servo needs to turn for the different holes
-byte holes[7] = {0,1,2,3,4,5,6};
+byte holes[7] = {178,151,125,99,73,49,26};
 
 //RGB - HSL
 //-------------------------
@@ -50,7 +50,8 @@ int minimum = 0;
 
     
 void setup() {
-  Serial.begin(1200);
+ 
+  Serial.begin(115200);
   
   //SERVO 1
   //-------------------------
@@ -75,7 +76,6 @@ void setup() {
   
   digitalWrite(s0, HIGH); //Die vier weiÃen LEDs am Farbsensor sollen leuchten
   digitalWrite(s1, HIGH);
-
 }
 
 
@@ -85,7 +85,9 @@ void loop() {
     delay(2000);
 
     byte position = getColorPosition();
-    // FISRO: make the servo turn to the position of hole[position]
+    // FISRO: make the servo turn to the position of holes[position]
+    servo2.write(holes[position]);
+    delay(1000);
 
     position_S1 = 151;       // Position Ã¼ber der Ãffnung
     servo1.write(position_S1);
@@ -135,6 +137,7 @@ boolean getColorPosition() {
   // we have can be taken as first detected color without 
   // any further calculations
   if (colorCount == 0) {
+    Serial.println("First color found!");
     red_array[0]   = red;
     green_array[0] = green;
     blue_array[0]  = blue;
@@ -151,6 +154,7 @@ boolean getColorPosition() {
         delta[i] = abs(red_array[i]-red)+
                    abs(green_array[i]-green)+
                    abs(blue_array[i]-blue);
+        Serial.println("Delta "+(String)i+" = "+(String)delta[i]);
       }
 
       // we want to find the closest color, compared to the above read values
@@ -173,15 +177,18 @@ boolean getColorPosition() {
       // 3) the read values are close enough to an exsting color
       if(delta[posmin]<=THRESHOLD) 
       {
+        Serial.println("Found color "+(String)posmin);
         // existing color
         return posmin;
       }
       else if(colorCount>=6) // should never be >6, but let's be safe
       {
+        Serial.println("New color, but array is full!");
         return 6;       // hole a index #6 is thge trash, #0 to #5 are the 6 colors.
       }
       else
       {
+        Serial.println("New color!");
         // new color to be stored in the array
         red_array[colorCount]   = red;
         green_array[colorCount] = green;
