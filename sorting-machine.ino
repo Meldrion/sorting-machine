@@ -151,9 +151,10 @@ boolean getColorPosition() {
       // calculate the "difference" to the stored colors
       for(int i=0; i<colorCount; i++)
       {
-        delta[i] = abs(red_array[i]-red)+
+        /*delta[i] = abs(red_array[i]-red)+
                    abs(green_array[i]-green)+
-                   abs(blue_array[i]-blue);
+                   abs(blue_array[i]-blue);*/
+        delta[i] = (int) rgbToHsl(red_array[i],green_array[i],blue_array[i]);
         Serial.println("Delta "+(String)i+" = "+(String)delta[i]);
       }
 
@@ -199,6 +200,42 @@ boolean getColorPosition() {
         return colorCount-1;
       }
   }
-  
+}
 
+double rgbToHsl(byte red, byte green, byte blue) {    
+  double rd = (double) red/255;
+  double gd = (double) green/255;
+  double bd = (double) blue/255;
+  double max = threeway_max(rd, gd, bd);
+  double min = threeway_min(rd, gd, bd);
+  double h, s, l = (max + min) / 2;
+  
+  if (max == min) {
+      h = s = 0; // achromatic
+  } else {
+      double d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      if (max == rd) {
+          h = (gd - bd) / d + (gd < bd ? 6 : 0);
+      } else if (max == gd) {
+          h = (bd - rd) / d + 2;
+      } else if (max == bd) {
+          h = (rd - gd) / d + 4;
+      }
+      h /= 6;
+  }
+  //Serial.println(h);
+  return h*100;
+  /*
+  hsl[0] = h;
+  hsl[1] = s;
+  hsl[2] = l;*/
+}
+
+double threeway_max(double a, double b, double c) {
+  return max(a, max(b, c));
+}
+
+double threeway_min(double a, double b, double c) {
+  return min(a, min(b, c));
 }
