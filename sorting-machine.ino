@@ -24,9 +24,9 @@ byte position_S2 = 0;
 #define out 21
 
 // Ein Array von 6 Bytes für jede Farbe vordefinieren
-byte red_array[6]   = {0,0,0,0,0,0};  
-byte green_array[6] = {0,0,0,0,0,0};
-byte blue_array[6]  = {0,0,0,0,0,0};
+int red_array[6]   = {0,0,0,0,0,0};  
+int green_array[6] = {0,0,0,0,0,0};
+int blue_array[6]  = {0,0,0,0,0,0};
 
 // FISRO: number or stored colors
 int colorCount = 0;    
@@ -109,26 +109,19 @@ boolean getColorPosition() {
    
   // FISRO: array to store the difference with the read values
   // FISRO: this does not need to be global as it is only used inside *this* function
-  long delta[6] = {0,0,0,0,0,0};    
+  double delta[6] = {0,0,0,0,0,0};    
 
   // FISRO: read RGB values from the sensor
   // Rote Lichtwerte
-  digitalWrite(s2,LOW);
-  digitalWrite(s3,LOW);
-  red = pulseIn(out, HIGH);  // Output-frequenz lesen
+  red = getColor(LOW,LOW);
+  delay(500);
+  
+  // Blaue Lichtwerte
+  blue = getColor(LOW,HIGH);
   delay(500);
   
   // Grüne Lichtwerte
-  digitalWrite(s2,HIGH);
-  digitalWrite(s3,HIGH);
-  green = pulseIn(out, HIGH);
-  delay(500);
-  
-  
-  // Blaue Lichtwerte
-  digitalWrite(s2,LOW);
-  digitalWrite(s3,HIGH);
-  blue = pulseIn(out, HIGH);    
+  green = getColor(HIGH,HIGH);
   delay(500);
   
   Serial.println("R= "+(String)red+" G= "+(String)green+" B= "+(String)blue);
@@ -154,7 +147,11 @@ boolean getColorPosition() {
         /*delta[i] = abs(red_array[i]-red)+
                    abs(green_array[i]-green)+
                    abs(blue_array[i]-blue);*/
-        delta[i] = (int) rgbToHsl(red_array[i],green_array[i],blue_array[i]);
+        /*delta[i] = (int) rgbToHsl(red_array[i],green_array[i],blue_array[i]);*/
+        // source: http://colormine.org/delta-e-calculator
+        delta[i] = sqrt(pow(red_array[i]-red,2)+
+                        pow(green_array[i]-green,2)+
+                        pow(blue_array[i]-blue,2));
         Serial.println("Delta "+(String)i+" = "+(String)delta[i]);
       }
 
@@ -238,4 +235,39 @@ double threeway_max(double a, double b, double c) {
 
 double threeway_min(double a, double b, double c) {
   return min(a, min(b, c));
+}
+
+int getColor(boolean pS2, boolean pS3){
+  byte count = 21;
+    
+  // setting filter
+  digitalWrite(s2,pS2);
+  digitalWrite(s3,pS3);
+
+  int frequency = 0;  
+  int values[count]= {0};
+  
+  for(int i = 0;i < count; i++){
+    frequency = pulseIn(out, LOW);
+    values[i] = frequency;
+  }
+  
+  for(int i=0; i<count-1; i++)
+  {
+    int posmin = i;
+    for(int j=i+1; j<count; j++)
+    {
+      if(values[j]<values[posmin])
+        posmin=j;
+    }
+
+    if(posmin!=i)
+    {
+        int temp = values[i];
+        values[i] = values[posmin];
+        values[posmin] = temp;
+    }
+  }
+ 
+  return values[count/2];
 }
